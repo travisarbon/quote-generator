@@ -1,0 +1,157 @@
+<head>
+    <title>Random Quote Generator</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <!--jQuery script area-->
+    <script>
+        $(document).ready(function(){
+
+            var $quotes = $('#quote-text');
+            var $attribution = $('#attribution-area');
+            var $storedQuotes;
+            var $colors = ['#b293c6', '#dc8342', '#75c763', '#6580c2', '#c66562'];
+            var $number = 0;
+
+            /* Gets the quotes and stores them */
+
+            $.ajax({
+                type: 'GET',
+                url: 'http://www.quotesondesign.com/wp-json/posts?filter[orderby]=rand&filter[posts_per_page]=15',
+                success: function(json){
+                    $storedQuotes = json;
+                    console.log('success', $storedQuotes);
+                    $quotes.html(json[0].content);
+                    $attribution.html("<p> - " + json[0].title + "</p>");
+                }
+            });
+
+            /*Creates a button that pulls a newQuote */
+
+            $('#newQuote-button').on('click', function(){
+                $number = Math.floor(Math.random() * ($storedQuotes.length - 0 + 1));
+                $quotes.html($storedQuotes[$number].content);
+                $attribution.html("<p> - " + $storedQuotes[$number].title + "</p>");
+                var $colorPicker = Math.floor(Math.random() * ($colors.length + 1));
+                $('#main').css('background-color', $colors[$colorPicker]);
+                $('#main').css('color', $colors[$colorPicker]);
+            });
+
+            /*Creates a button that tweets out the quote */
+
+            $('#tweet-button').on('click', function(){
+                var $quoteContent = $storedQuotes[$number].content.slice(3, $storedQuotes[$number].content.length - 5);
+               var $textToTweet = '"' + $quoteContent + '"' + "    -" + $storedQuotes[$number].title;
+                var twtLink = 'http://twitter.com/home?status=' +encodeURIComponent($textToTweet);
+                window.open(twtLink,'_blank');
+            });
+        });
+    </script>
+    <!-- This is where the style sheet begins -->
+    <style>
+        body {
+            background-color: #b293c6;
+            color: #b293c6;
+            font-size: 24px;
+            font-family: Helvetica;
+        }
+
+        .top{
+            color: #fff5f5;
+            text-align: center;
+        }
+
+        .end {
+            color: #fff5f5;
+            text-align: center;
+            margin: 0;
+            padding: 5px;
+            font-size: 12px;
+        }
+
+        .quote-backing {
+            background-color: #fff5f5;
+            margin: 150px;
+            margin-top: 50px;
+            margin-bottom: 50px;
+            padding: 50px;
+            box-shadow: 0 0 10px #000000;
+        }
+
+        .btn {
+            background-color: inherit;
+        }
+
+        #attribution-div {
+            float: right;
+        }
+
+        #newQuote-button {
+            float: left;
+        }
+
+        #tweet-button {
+            float: right;
+        }
+
+    /* The media query controls how the different sections display at different screen sizes */
+        @media screen and (max-width: 600px) {
+            body {
+                font-size: 18px;
+            }
+
+            .quote-backing {
+                margin: 10px;
+                margin-top: 20px;
+                padding: 10px;
+            }
+
+            #newQuote-button {
+                float: none;
+            }
+
+            #tweet-button {
+                float: none;
+            }
+        }
+
+    </style>
+</head>
+
+<!-- This is the main section of html -->
+<body id = "main">
+<!-- This div contains the headline -->
+<div class = "top">
+    <h1>Get Inspired</h1>
+</div>
+<!-- This div contains the area that will display the quote, as well as the buttons -->
+<div class = "container-fluid quote-backing">
+    <!-- This div is where the quote is displayed -->
+    <div class = "quote-area">
+        <p id = "quote-text">
+        </p>
+        <div class = "row">
+            <div class = "col-xs-6" id = "attribution-div">
+        <p id = "attribution-area">
+        </p>
+            </div>
+        </div>
+        <!-- This div houses the buttons that appear below the quote -->
+        <div class = "row button-area">
+            <div class = "col-md-4" id = "newQuote-button">
+                <button class = "btn btn-block">New Quote</button>
+            </div>
+            <div class = "col-md-4"  id = "tweet-button">
+                <button class = "btn btn-block">
+                    <i class = "fa fa-twitter fa-6"></i> Tweet this quote</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class = "end">
+    <p>Coded by Travis Arbon</p>
+</div>
+</body>
